@@ -116,6 +116,7 @@ public class SnakeGame {
             result[1] = currentPosition[1];
         }
         else{
+            findTailRecursive(dif1, currentPosition);
         }
 
 
