@@ -1,3 +1,5 @@
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 public class SnakeGame {
 
     //Attributes
@@ -9,6 +11,7 @@ public class SnakeGame {
 
     private static int recursiveChecks; //counts the number of positions checked when performing the tail search using recursive search, across all instances of the SnakeGame
 
+    private static int length;
     //Constructors
     SnakeGame(){ //which initializes an empty 1 x 1 gameboard
         int [][] board =  new int[1][1];
@@ -19,8 +22,7 @@ public class SnakeGame {
         headPosition = new int[] {x, y};
 
         game = board;
-        //Replace and use two for loops
-        for(int i = 0;)
+
     }
     //Methods
     public int[] findTailExhaustive(){
@@ -100,30 +102,66 @@ public class SnakeGame {
         return findTailRecursive(headPosition, headPosition);
     }
     private int[] findTailRecursive(int[] currentPosition, int[] previousPosition){
-
-        int length = 0;
-        int dif1 [] = new int [] {headPosition[0] + 1, headPosition[1]};
-        int dif2 [] = new int [] {headPosition[0] - 1, headPosition[1]};
-        int dif3 [] = new int [] {headPosition[0], headPosition[1] + 1};
-        int difd [] = new int [] {headPosition[0], headPosition[1] - 1};
-
+        recursiveChecks++;
         int result [] = new int[3];
-        resetCounters();
-        int numNeighbors = countNeighbors(currentPosition[0], currentPosition[1]);
+        int x = currentPosition[0];
+        int y = currentPosition[1];
+        System.out.println("i: " + x + " j: " + y);
 
-        if(numNeighbors == 1 && headPosition != currentPosition){
-            result[0] = currentPosition[0];
-            result[1] = currentPosition[1];
+        int numNeighbors = countNeighbors(x, y);
+
+        System.out.println("Number of Neighbors: " + numNeighbors);
+
+        if(numNeighbors == 1){
+            if (headPosition[0] != x && headPosition[1] != y) {
+                length++;
+                result[0] = currentPosition[0];
+                result[1] = currentPosition[1];
+                result[2] = length;
+                return result;
+            }
         }
-        else{
+        if(x + 1 < game.length && previousPosition[0] != x + 1){
+            if(game[x + 1][y]){
+                length++;
+                previousPosition = currentPosition;
+                int[] newPos = new int[] {currentPosition[0] + 1, currentPosition[1]};
+                return findTailRecursive(newPos, previousPosition);
+            }
         }
-
-
-
-
-        if(currentPosition != headPosition && neighbors(currentPosition) == 1){
-
+        if(x - 1 >= 0 && previousPosition[0] != x - 1){
+            if(game[x - 1][y]){
+                length++;
+                previousPosition = currentPosition;
+                int[] newPos = new int[] {currentPosition[0] - 1, currentPosition[1]};
+                return findTailRecursive(newPos, previousPosition);
+            }
         }
+        if(y + 1 < game[x].length && previousPosition[1] != y + 1){
+            if(game[x][y + 1]){
+                length++;
+                previousPosition = currentPosition;
+                int[] newPos = new int[] {currentPosition[0], currentPosition[1] + 1};
+                return findTailRecursive (newPos, previousPosition);
+            }
+        }
+        if(y - 1 >= 0 && previousPosition[1] != y - 1){
+            if(game[x][y - 1]){
+                length++;
+                previousPosition = currentPosition;
+                int[] newPos = new int[] {currentPosition[0], currentPosition[1] - 1};
+                return findTailRecursive(newPos, previousPosition);
+            }
+        }
+        length++;
+        result[0] = x;
+        result[1] = y;
+        result[2] = length;
+        System.out.println("Recursive Checks: " + getRecursiveChecks());
+        System.out.println("Length of the snake is: " + length);
+        System.out.println("Found tail at: i: " + x + " j: " + y);
+
+        return result;
     }
 
 
@@ -133,13 +171,11 @@ public class SnakeGame {
         recursiveChecks = 0;
 
     }
-    /*
-    public static int getRecursiveChecks(){ //gets the current state of the recursiveChecks counter.
 
+    public static int getRecursiveChecks(){ //gets the current state of the recursiveChecks counter.
+        return  recursiveChecks;
     }
     public static int getExhaustiveChecks(){ //gets the current state of the exhaustiveChecks counter.
-
+        return  exhaustiveChecks;
     }
-
-     */
 }
